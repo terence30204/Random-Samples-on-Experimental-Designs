@@ -1,5 +1,5 @@
 ---
-title: "STA305 A1"
+title: "Analysis of Experimental Designs"
 author: "Terence Chan"
 date: "27/01/2020"
 output: pdf_document
