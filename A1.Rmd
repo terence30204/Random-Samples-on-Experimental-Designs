@@ -1,0 +1,143 @@
+---
+title: "STA305 A1"
+author: "Terence Chan"
+date: "27/01/2020"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#### Part A.
+
+### 1.
+```{r}
+set.seed(1366)
+```
+
+### 2.
+
+## Treatment S
+
+```{r}
+dat_S <- round(rnorm(8, 5, 2),3)
+dat_S
+```
+
+### 3.
+
+## Treatment T
+
+```{r}
+dat_T <- round(rnorm(8, 7, 2),3)
+dat_T
+```
+
+### 4.
+
+```{r}
+dat_both <- data.frame(dat_S,dat_T)
+dat_both
+```
+
+#### Part B
+
+# Completely Randomized Design
+
+```{r}
+s <- c(dat_S)
+t <- c(dat_T)
+s_t <- c(s, t)
+m <- mean(s - t)
+N <-choose(16,8)
+result_N1 <- numeric(N)
+assmt <- combn(1:16,8)
+for (i in 1:N)
++ {result_N1[i] <- mean(s_t[assmt[,i]]) - mean(s_t[-assmt[,i]])}
+
+t <- mean(result_N1)
+pvalue1 <- sum(abs(result_N1 - t) >= abs(m-t))/N
+pvalue1
+```
+
+There are 16 observations in total, 8 observations of 2 variables. The distribution approximately follows a normal distribution. The two-sided p-value is roughly 0.22. Since the p-value is greater than 5%, we fail to reject the null hypothesis.
+
+
+```{r}
+graph <- hist(result_N1,xlab = "Mean Difference", main = "Randomization Test of
+              Completely Randomized Design")
+abline(v = pvalue1, col = "red")
+```
+
+
+# Randomized Paired Design
+
+
+```{r}
+a <- dat_both$dat_S - dat_both$dat_T
+dat2 <- data.frame(dat_both, a)   
+dat2
+```
+
+
+```{r}
+treatment <- 2^(8) 
+result_N2 <- numeric(treatment) 
+b <- list(c(-1,1)) 
+c <- expand.grid(rep(b, 8)) 
+
+for(i in 1:treatment){
+result_N2[i] <- mean(as.numeric(c[i,])*a)
+}
+```
+
+
+```{r}
+pvalue2 <- sum(result_N2 <= a)/treatment
+pvalue2
+```
+
+```{r}
+hist(result_N2, xlab="Mean Difference",main="Randomization Test of 
+     Randomized Paired Design")
+abline(v = pvalue2, col="red")
+```
+
+The two-sided p-value of the completely randomized design is 0.43 and the value for the randomized paired design is 0.39 which indicates that there is a slgiht discrepancy due to the difference in assignment treatments for both designs. Furthermore, this indicates that the null hypothesis cannot be rejected due to a p-value that is greater than 5%
+
+
+#### Part C.
+
+# Completely Ranodomized Design
+
+```{r}
+t1 <- t.test(s,t,var.equal = TRUE, alternative = "less")
+t1
+```
+
+# Randomized Paired Design
+
+```{r}
+t2 <- t.test(dat_both$dat_S, dat_both$dat_T, paired = TRUE, alternative = 'less')
+t2
+```
+
+### (i).
+
+The p-value of the completely randomized design is 0.21 and the paired design is 0.24 which are both greater than 5%. This indicates that the null hypothesis cannot be rejected.
+
+### (ii).
+
+The assumptions for the t-test are that the data is randomly generated and that the means of the distribution follows a normal distribution. The data was generated from a random seed simulation in part A. Furthermore, the test consists of an increasing number of independent random variables, therefore by the central limit theorem, the distirbution of the means follows a normal distribution, therefore both assumptions are satisfied. 
+
+### (iii.)
+
+
+
+The two-sided p-value for the completely randomized design for part B and C is 0.22 and 0.21 respectively. The p-value for the randomized paired design for part B and C is 0.22 and 0.24 respectively. There is a slight discrepancy due to the treatment assignments. Therefore the results of the t-test agree with the results of the randomization test in part B.
+
+
+
+
+
